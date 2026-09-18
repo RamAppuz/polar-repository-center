@@ -2,8 +2,9 @@ import streamlit as st
 import pandas as pd
 import random
 import time
+import pydeck as pdk
 
-# 1. Production UI Theme & Layout Configuration
+# 1. Page Configuration for a high-tech dashboard structure
 st.set_page_config(
     page_title="NCPOR Polar Command Center", 
     page_icon="❄️",
@@ -11,185 +12,209 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom High-Tech Styling Enhancements
+# Custom Military-Grade CSS styling blocks
 st.markdown("""
     <style>
-    .metric-card {
-        background-color: #1e293b;
-        padding: 15px;
-        border-radius: 10px;
-        border: 1px solid #334155;
-    }
-    .status-badge {
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-weight: bold;
-        font-size: 12px;
-    }
+    .stApp { background-color: #0b0f19; color: #f8fafc; }
+    div[data-testid="stMetricValue"] { font-size: 28px !important; font-weight: bold !important; color: #38bdf8 !important; }
+    .stProgress > div > div > div > div { background-color: #ef4444 !important; }
     </style>
 """, unsafe_allow_html=True)
 
-# 2. Permanent Mock Database Setup (Simulated Storage State)
+# 2. Database Layer Persistence (Session State Management)
 if 'comnap_cargo_db' not in st.session_state:
     st.session_state.comnap_cargo_db = pd.DataFrame([
-        {"Manifest ID": "MFT-2026-001", "Item": "Aviation Fuel (Jet A-1)", "Category": "Fuel", "Quantity": 1500, "Unit": "Liters", "Min Threshold": 2000, "Hazard Class": "Class 3 (Flammable)", "Status": "CRITICAL"},
-        {"Item": "Arctic Survival Rations", "Manifest ID": "MFT-2026-002", "Category": "Food", "Quantity": 5000, "Unit": "Packs", "Min Threshold": 1000, "Hazard Class": "Non-Hazardous", "Status": "SAFE"},
-        {"Item": "Thermal Extreme Outerwear", "Manifest ID": "MFT-2026-003", "Category": "Clothing", "Quantity": 120, "Unit": "Sets", "Min Threshold": 50, "Hazard Class": "Non-Hazardous", "Status": "SAFE"},
-        {"Item": "Medical Trauma Oxygen Units", "Manifest ID": "MFT-2026-004", "Category": "Medical", "Quantity": 15, "Unit": "Cylinders", "Min Threshold": 30, "Hazard Class": "Class 2.2 (Gas)", "Status": "CRITICAL"},
+        {"Manifest ID": "MFT-2026-001", "Item": "Aviation Fuel (Jet A-1)", "Category": "Fuel", "Quantity": 1500, "Unit": "Liters", "Min Threshold": 2000, "Status": "CRITICAL"},
+        {"Item": "Arctic Survival Rations", "Manifest ID": "MFT-2026-002", "Category": "Food", "Quantity": 5000, "Unit": "Packs", "Min Threshold": 1000, "Status": "SAFE"},
+        {"Item": "Thermal Extreme Outerwear", "Manifest ID": "MFT-2026-003", "Category": "Clothing", "Quantity": 120, "Unit": "Sets", "Min Threshold": 50, "Status": "SAFE"},
+        {"Item": "Medical Oxygen Cylinders", "Manifest ID": "MFT-2026-004", "Category": "Medical", "Quantity": 15, "Unit": "Cylinders", "Min Threshold": 30, "Status": "CRITICAL"},
     ])
 
-# 3. Sidebar Navigation Control Board
-with st.sidebar:
-    st.image("https://icons8.com", width=70)
-    st.title("🛰️ NCPOR COMMAND")
-    st.caption("National Centre for Polar & Ocean Research")
-    st.write("---")
-    menu = st.radio(
-        "Select Control Module:",
-        ["📊 Operations Overview", "🚢 COMNAP Cargo Registry", "🫁 Live Personnel Biometrics", "🌤️ Weather Gateways", "🚨 Emergency Response (SOS)"]
-    )
-    st.write("---")
-    live_flux = st.toggle("Enable Live Telemetry Stream", value=True)
-    if live_flux and menu == "🫁 Live Personnel Biometrics":
-        st.caption("🔄 High-frequency streaming active (2s update)...")
+# Global Emergency Trigger Initialization
+if 'emergency_broadcast_active' not in st.session_state:
+    st.session_state.emergency_broadcast_active = False
 
-# --- APP HEADER ---
-st.title("❄️ Integrated Polar Expedition Logistics & Asset Management System")
-st.caption("🌐 Ministry of Earth Sciences (MoES) | Government of India | Smart Automation Grid")
+# 3. Structural Header Area
+st.title("❄️ Integrated Polar Expedition Logistics & Asset Management")
+st.caption("🌐 Ministry of Earth Sciences (MoES) | National Centre for Polar and Ocean Research (NCPOR) | Live System")
 st.write("---")
 
-# --- MODULE 1: OPERATIONS OVERVIEW ---
+# Global Active Emergency Header Alert banner
+if st.session_state.emergency_broadcast_active:
+    st.error("🚨 GLOBAL RED ALERT PROTOCOL IS ACTIVE. SATCOM COMMUNICATIONS APPLIED OVER ALL SATELLITE CHANNELS.")
+
+# 4. Central Dashboard Navigation Layout
+menu = st.sidebar.radio(
+    "🛰️ CONTROL ENGINE MODULES:",
+    ["📊 Operations Overview", "🚢 COMNAP Cargo Registry", "🫁 Live Personnel Biometrics", "🌤️ Climate Telemetry Grid", "🚨 Emergency Control System"]
+)
+
+st.sidebar.write("---")
+st.sidebar.status("📡 Telemetry Syncing: ACTIVE", state="running")
+
+# --- MODULE 1: OPERATIONS OVERVIEW (UPGRADED HIGH-TECH MAP) ---
 if menu == "📊 Operations Overview":
-    st.subheader("📍 Real-Time Spatial Positioning & Telemetry Grid")
+    st.subheader("📍 Real-Time Spatial Positioning & Terrain Telemetry")
     
-    # Visual Metrics Blocks
     m1, m2, m3 = st.columns(3)
-    with m1:
-        st.info("📶 **Active Polar Nodes**  \n## 03 Stations Online")
-    with m2:
-        critical_count = len(st.session_state.comnap_cargo_db[st.session_state.comnap_cargo_db['Status']=='CRITICAL'])
-        st.error(f"⚠️ **Critical Supply Breaches**  \n## {critical_count} Items Flagged")
-    with m3:
-        st.success("💚 **Mission Vitals Status**  \n## Telemetry Connected")
+    m1.metric(label="Active Polar Nodes", value="3 Stations", delta="Online")
+    crit_qty = len(st.session_state.comnap_cargo_db[st.session_state.comnap_cargo_db['Status']=='CRITICAL'])
+    m2.metric(label="Critical Supply Breaches", value=f"{crit_qty} Flagged", delta="Action Required", delta_color="inverse")
+    m3.metric(label="System Satellite Feed", value="Secure Encryption", delta="Connected")
     
-    st.write("#### Live Deployment Map (Antarctica Research Grid)")
-    map_data = pd.DataFrame({
-        'latitude': [-69.4083, -70.7667, -74.0000],
-        'longitude': [76.1944, 11.7333, 35.0000]
-    })
-    st.map(map_data, size=25000)
+    # Coordinates for key research outposts
+    map_data = pd.DataFrame([
+        {"name": "Bharati Station (India)", "latitude": -69.4083, "longitude": 76.1944},
+        {"name": "Maitri Station (India)", "latitude": -70.7667, "longitude": 11.7333},
+        {"name": "Field Camp Alpha", "latitude": -72.0000, "longitude": 45.0000}
+    ])
+    
+    st.write("#### 📡 3D Satellite Imagery Operations Grid")
+    
+    # Professional Mapbox Configuration for a Dark Satellite/Terrain view
+    view_state = pdk.ViewState(
+        latitude=-70.0,
+        longitude=45.0,
+        zoom=2,
+        pitch=40
+    )
+    
+    layer = pdk.Layer(
+        "ScatterplotLayer",
+        map_data,
+        get_position=["longitude", "latitude"],
+        get_color="[239, 68, 68, 200]",  # Red warning dots for stations
+        get_radius=80000,
+        pickable=True
+    )
+    
+    # Using the official Mapbox Dark/Satellite Hybrid professional style map
+    st.pydeck_chart(pdk.Deck(
+        map_style="mapbox://styles/mapbox/satellite-streets-v12", 
+        initial_view_state=view_state,
+        layers=[layer],
+        tooltip={"text": "{name}"}
+    ))
 
 # --- MODULE 2: COMNAP CARGO REGISTRY ---
 elif menu == "🚢 COMNAP Cargo Registry":
-    st.subheader("🚢 Central Vessel & Station Cargo Inventory Database")
+    st.subheader("🚢 Central Vessel & Station Cargo Inventory Ledger")
     
-    # Core Intelligent System Automation Warning
     critical_items = st.session_state.comnap_cargo_db[st.session_state.comnap_cargo_db['Status'] == 'CRITICAL']
     if not critical_items.empty:
         for idx, row in critical_items.iterrows():
-            st.error(f"🤖 **AUTOMATED LOGISTICS ALENT:** Supply Line Deficiency detected for `{row['Item']}` (ID: {row['Manifest ID']}). Storage dropped below safe buffer threshold ({row['Min Threshold']} {row['Unit']}). Resupply route ticket generated automatically.")
+            st.error(f"🤖 **AUTOMATED SMART TRACER:** Storage Alert on `{row['Item']}`. Below safety buffer target. Automated indent queued.")
 
-    # Search and Filter Engine for a professional layout
-    st.write("#### 🔍 Filter Ledger")
-    search_query = st.text_input("Search items by name or Manifest ID:", "")
+    st.write("#### 🔍 Filter System Ledger")
+    search_box = st.text_input("Enter item keyword or ID reference:", "")
     
-    filtered_db = st.session_state.comnap_cargo_db
-    if search_query:
-        filtered_db = filtered_db[
-            filtered_db['Item'].str.contains(search_query, case=False) | 
-            filtered_db['Manifest ID'].str.contains(search_query, case=False)
-        ]
+    display_db = st.session_state.comnap_cargo_db
+    if search_box:
+        display_db = display_db[display_db['Item'].str.contains(search_box, case=False)]
         
-    st.write("#### Verified Inventory Records Database")
-    st.dataframe(filtered_db, use_container_width=True, hide_index=True)
+    st.dataframe(display_db, use_container_width=True, hide_index=True)
     
-    # Data Entry Control (Correctly scoped so it ONLY appears inside this module!)
-    st.write("---")
-    with st.expander("➕ Inject New Cargo Manifest Entry into Database"):
-        with st.form("comnap_db_form", clear_on_submit=True):
+    with st.expander("➕ Inject New Cargo Manifest Entry"):
+        with st.form("cargo_entry_form", clear_on_submit=True):
             col1, col2 = st.columns(2)
             with col1:
-                item_name = st.text_input("Item Name / Description")
-                manifest_id = st.text_input("Manifest ID Reference", value=f"MFT-2026-{random.randint(100,999)}")
-                category = st.selectbox("Inventory Category", ["Fuel", "Food", "Clothing", "Medical", "Expedition Equipment"])
+                i_name = st.text_input("Cargo Item Name")
+                m_id = st.text_input("Manifest ID Reference", value=f"MFT-2026-{random.randint(100,999)}")
+                cat = st.selectbox("Category Group", ["Fuel", "Food", "Clothing", "Medical", "Equipment"])
             with col2:
-                qty = st.number_input("Current Stored Quantity", min_value=0, value=100)
-                unit_type = st.text_input("Measurement Unit", value="Units")
-                threshold = st.number_input("Minimum Safety Threshold Level", min_value=0, value=50)
-                hazard_class = st.selectbox("Hazard Classification", ["Non-Hazardous", "Class 2.2 (Gas)", "Class 3 (Flammable)", "Class 9 (Miscellaneous Goods)"])
+                current_qty = st.number_input("Stored Stock Quantity", min_value=0, value=100)
+                u_type = st.text_input("Unit Measurement Label", value="Units")
+                safety_t = st.number_input("Minimum Safety Level Buffer", min_value=0, value=50)
             
-            submit = st.form_submit_button("Commit Entry to Database Ledger")
-            if submit and item_name:
-                status = "SAFE" if qty >= threshold else "CRITICAL"
-                new_entry = {
-                    "Manifest ID": manifest_id, "Item": item_name, "Category": category, 
-                    "Quantity": qty, "Unit": unit_type, "Min Threshold": threshold, 
-                    "Hazard Class": hazard_class, "Status": status
-                }
-                st.session_state.comnap_cargo_db = pd.concat([st.session_state.comnap_cargo_db, pd.DataFrame([new_entry])], ignore_index=True)
-                st.success(f"Database Write Success: Entry logged for {item_name}.")
-                st.rerun()
+            if st.form_submit_button("Commit Entry to Main Ledger"):
+                if i_name:
+                    stat = "SAFE" if current_qty >= safety_t else "CRITICAL"
+                    new_item = {"Manifest ID": m_id, "Item": i_name, "Category": cat, "Quantity": current_qty, "Unit": u_type, "Min Threshold": safety_t, "Status": stat}
+                    st.session_state.comnap_cargo_db = pd.concat([st.session_state.comnap_cargo_db, pd.DataFrame([new_item])], ignore_index=True)
+                    st.success("Entry saved successfully.")
+                    st.rerun()
 
 # --- MODULE 3: LIVE PERSONNEL BIOMETRICS ---
 elif menu == "🫁 Live Personnel Biometrics":
-    st.subheader("👤 Real-Time Environmental Medicine & Biometric Dashboard")
+    st.subheader("👤 High-Frequency Radio Telemetry Biometric Stream")
+    st.caption("🔄 Telemetry Loop Active: Data elements updating dynamically every 1.0 seconds.")
     
-    personnel_list = [
-        {"Name": "Dr. Aarav Sharma", "Role": "Lead Meteorologist", "Loc": "Bharati Station", "Base_HR": 74, "Base_BP": 120, "Base_SpO2": 98, "Base_Temp": 36.6, "O2_Cyl": 85},
-        {"Name": "Sarah Jenkins", "Role": "Logistics Chief", "Loc": "Maitri Station", "Base_HR": 78, "Base_BP": 122, "Base_SpO2": 99, "Base_Temp": 36.7, "O2_Cyl": 90},
-        {"Name": "Cmdr. Rajesh Kumar", "Role": "Expedition Leader", "Loc": "Ice Shelf Outpost", "Base_HR": 108, "Base_BP": 139, "Base_SpO2": 92, "Base_Temp": 34.6, "O2_Cyl": 18}
+    team = [
+        {"Name": "Dr. Aarav Sharma", "Role": "Lead Meteorologist", "Loc": "Bharati Station", "HR": 72, "SYS": 120, "DIA": 80, "SpO2": 98, "Temp": 36.6, "O2": 82},
+        {"Name": "Sarah Jenkins", "Role": "Logistics Chief", "Loc": "Maitri Station", "HR": 76, "SYS": 122, "DIA": 82, "SpO2": 99, "Temp": 36.8, "O2": 91},
+        {"Name": "Cmdr. Rajesh Kumar", "Role": "Expedition Leader", "Loc": "Ice Outpost Alpha", "HR": 106, "SYS": 141, "DIA": 92, "SpO2": 91, "Temp": 34.4, "O2": 14}
     ]
     
-    for p in personnel_list:
-        # Dynamic telemetry fluctuation calculations
-        current_hr = p["Base_HR"] + random.randint(-3, 3)
-        current_sbp = p["Base_BP"] + random.randint(-4, 4)
-        current_dbp = 80 + random.randint(-3, 3)
-        current_spo2 = min(100, p["Base_SpO2"] + random.randint(-1, 1))
-        current_temp = round(p["Base_Temp"] + random.uniform(-0.2, 0.2), 1)
+    for p in team:
+        live_hr = p["HR"] + random.randint(-3, 3)
+        live_sys = p["SYS"] + random.randint(-4, 4)
+        live_dia = p["DIA"] + random.randint(-2, 2)
+        live_spo2 = min(100, p["SpO2"] + random.randint(-1, 1))
+        live_temp = round(p["Temp"] + random.uniform(-0.2, 0.2), 1)
         
-        # Structural visual block container
         with st.container(border=True):
-            head_col, data_col = st.columns([1, 3])
-            
-            with head_col:
+            h_col, d_col = st.columns()
+            with h_col:
                 st.markdown(f"### 👤 {p['Name']}")
-                st.caption(f"**Role:** {p['Role']}")
-                st.caption(f"📍 **Location:** {p['Loc']}")
-            
-            with data_col:
+                st.write(f"*{p['Role']}*")
+                st.markdown(f"📍 **Node:** {p['Loc']}")
+            with d_col:
                 c1, c2, c3, c4 = st.columns(4)
+                c1.metric("❤️ Heart Rate", f"{live_hr} BPM")
+                c2.metric("🩺 Blood Pressure", f"{live_sys}/{live_dia} mmHg")
                 
-                c1.metric("❤️ Heart Rate", f"{current_hr} BPM")
-                c2.metric("🩺 Blood Pressure", f"{current_sbp}/{current_dbp} mmHg")
-                
-                if current_spo2 < 94:
-                    c3.metric("🚨 Oxygen (SpO2)", f"{current_spo2}%", "CRITICAL HYPOXIA", delta_color="inverse")
+                if live_spo2 < 93:
+                    c3.metric("🚨 Oxygen (SpO2)", f"{live_spo2}%", "LOW HYPOXIA", delta_color="inverse")
                 else:
-                    c3.metric("🟢 Oxygen (SpO2)", f"{current_spo2}%")
+                    c3.metric("🟢 Oxygen (SpO2)", f"{live_spo2}%")
                     
-                if current_temp < 35.0:
-                    c4.metric("🥶 Core Body Temp", f"{current_temp}°C", "HYPOTHERMIA RISK", delta_color="inverse")
+                if live_temp < 35.0:
+                    c4.metric("🥶 Core Body Temp", f"{live_temp}°C", "HYPOTHERMIA", delta_color="inverse")
                 else:
-                    c4.metric("🌡️ Core Body Temp", f"{current_temp}°C")
+                    c4.metric("🌡️ Core Body Temp", f"{live_temp}°C")
                 
-                # Visual UI Progress bar to track remaining oxygen reserves cleanly
-                st.write("**Remaining Suite Oxygen Cylinder Capacity:**")
-                if p["O2_Cyl"] < 25:
-                    st.progress(p["O2_Cyl"] / 100, text=f"⚠️ CRITICAL LEVEL: {p['O2_Cyl']}% Stored Reserves")
+                st.write(f"**Life-Support Oxygen Cylinder Reserves Level:** {p['O2']}%")
+                if p["O2"] < 20:
+                    st.progress(p["O2"] / 100)
+                    st.markdown("<span style='color:#ef4444; font-weight:bold;'>🚨 CRITICAL DEPLETION TRACED ON SUITE TANK RESERVES</span>", unsafe_allow_html=True)
                 else:
-                    st.progress(p["O2_Cyl"] / 100, text=f"Reserves Stable: {p['O2_Cyl']}%")
+                    st.progress(p["O2"] / 100)
 
-# --- MODULE 4: WEATHER DATA ---
-elif menu == "🌤️ Weather Gateways":
-    st.subheader("🌤️ Automated Climate Telemetry Gateway")
+# --- MODULE 4: CLIMATE TELEMETRY ---
+elif menu == "🌤️ Climate Telemetry Grid":
+    st.subheader("🌤️ Automated Weather Telemetry Matrix")
     col1, col2, col3 = st.columns(3)
-    col1.metric("Bharati Station Temp", "-24°C", "Wind: 18 knots")
-    col2.metric("Maitri Station Temp", "-31°C", "Wind: 42 knots")
-    col3.metric("Field Camp Alpha Temp", "-45°C", "Wind: 61 knots 🚨", delta_color="inverse")
-    st.error("🚨 **AUTOMATED WEATHER MITIGATION RULES:** Ground operations locked at Field Camp Alpha due to zero visibility blizzards.")
+    col1.metric("Bharati Station Node", "-22°C", "Wind: 14 knots")
+    col2.metric("Maitri Station Node", "-29°C", "Wind: 39 knots")
+    col3.metric("Field Camp Outpost Alpha", "-44°C", "Wind: 64 knots 🚨", delta_color="inverse")
+    st.error("🤖 **AUTOMATED MITIGATION RULE EXECUTION:** Safe navigation paths blocked out automatically at Field Camp Outpost due to wind shear limits.")
 
-# --- MODULE 5: SOS PROTOCOLS ---
-elif menu == "🚨 Emergency Response (SOS)":
-    st.subheader("⚠️ Emergency Response System (ERS) Control Board")
-    st.warning("Pressing the button below activates immediate distress protocols across all international networks.")
+# --- MODULE 5: EMERGENCY CONTROL SYSTEM ---
+elif menu == "🚨 Emergency Control System":
+    st.subheader("⚠️ Emergency Response System (ERS) Management Portal")
+    st.warning("CRITICAL ACTIONS AHEAD: Triggering these buttons overrides standard tracking loops to deploy emergency SAR groups.")
+    
+    col_trigger, col_reset = st.columns(2)
+    with col_trigger:
+        if st.button("🚨 BROADCAST EMERGENCY RED ALERT STATE", type="primary", use_container_width=True):
+    col_trigger, col_reset = st.columns(2)
+    
+    with col_trigger:
+        if st.button("🚨 BROADCAST EMERGENCY RED ALERT STATE", type="primary", use_container_width=True):
+            st.session_state.emergency_broadcast_active = True
+            st.rerun()
+            
+    with col_reset:
+        if st.button("✅ DE-ESCALATE SYSTEM TO STANDARD MONITORING", use_container_width=True):
+            st.session_state.emergency_broadcast_active = False
+            st.success("System returned to secure baseline operations status.")
+            st.rerun()
+
+    if st.session_state.emergency_broadcast_active:
+        st.error("🚨 CURRENT SYSTEM STATE: RED CRITICAL OVERRIDE. Signal outposts pinged continuously.")
+    else:
+        st.success("✅ CURRENT SYSTEM STATE: Baseline standard operations. No distress tracks detected.")
+# --- 5. AUTOMATED DYNAMIC TIMING REFRESH CONTROLLER LOOP ---
+if menu == "🫁 Live Personnel Biometrics":
+    time.sleep(1.0)
+    st.rerun()
