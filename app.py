@@ -63,38 +63,15 @@ if menu == "📊 Operations Overview":
     m3.metric(label="System Satellite Feed", value="Secure Encryption", delta="Connected")
     
     # Coordinates for key research outposts
-    map_data = pd.DataFrame([
-        {"name": "Bharati Station (India)", "latitude": -69.4083, "longitude": 76.1944},
-        {"name": "Maitri Station (India)", "latitude": -70.7667, "longitude": 11.7333},
-        {"name": "Field Camp Alpha", "latitude": -72.0000, "longitude": 45.0000}
-    ])
+    map_data = pd.DataFrame({
+        "latitude": [-69.4083, -70.7667, -72.0000],
+        "longitude": [76.1944, 11.7333, 45.0000]
+    })
     
-    st.write("#### 📡 3D Coordinate Cartography Grid")
+    st.write("#### 📡 Live Satellite Operations Grid Layer")
     
-    # Centering view near Antarctica location points
-    view_state = pdk.ViewState(
-        latitude=-70.0,
-        longitude=45.0,
-        zoom=2,
-        pitch=40
-    )
-    
-    layer = pdk.Layer(
-        "ScatterplotLayer",
-        map_data,
-        get_position=["longitude", "latitude"],
-        get_color=[239, 68, 68, 200],  # Bright red marker coordinates
-        get_radius=100000,
-        pickable=True
-    )
-    
-    # FIXED: Replaced custom Mapbox URL with built-in dark cloud environment layout (No tokens needed!)
-    st.pydeck_chart(pdk.Deck(
-        map_style="dark", 
-        initial_view_state=view_state,
-        layers=[layer],
-        tooltip={"text": "{name}"}
-    ))
+    # Using clean, high-performance map points that overlay beautifully on satellite configurations
+    st.map(map_data, zoom=2, color="#ef4444", size=50)
 
 # --- MODULE 2: COMNAP CARGO REGISTRY ---
 elif menu == "🚢 COMNAP Cargo Registry":
