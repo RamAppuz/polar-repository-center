@@ -53,7 +53,7 @@ menu = st.sidebar.radio(
 st.sidebar.write("---")
 st.sidebar.status("📡 Telemetry Syncing: ACTIVE", state="running")
 
-# --- MODULE 1: OPERATIONS OVERVIEW (TRUE PHOTO SATELLITE INTERFACE) ---
+# --- MODULE 1: OPERATIONS OVERVIEW ---
 if menu == "📊 Operations Overview":
     st.subheader("📍 Real-Time Spatial Positioning & Terrain Telemetry")
     
@@ -72,7 +72,7 @@ if menu == "📊 Operations Overview":
         {"name": "Field Camp Alpha", "lat": -72.0000, "lon": 45.0000}
     ]
     
-    # Generate Folium map using premium public photographic satellite tileset
+    # Generate Folium map using public photographic satellite tileset
     m = folium.Map(
         location=[-70.5, 45.0], 
         zoom_start=3, 
@@ -89,8 +89,12 @@ if menu == "📊 Operations Overview":
             icon=folium.Icon(color='red', icon='info-sign')
         ).add_to(m)
         
-    # Render the interactive visual map canvas inside the app
+    # CSS wrapper hack to force the container background to match the dark theme
+    st.markdown("<style>iframe { background-color: #0b0f19 !important; border: none !important; }</style>", unsafe_allow_html=True)
+    
+    # Render the interactive map canvas
     st_folium(m, width="100%", height=500, returned_objects=[])
+
 
 # --- MODULE 2: COMNAP CARGO REGISTRY ---
 elif menu == "🚢 COMNAP Cargo Registry":
