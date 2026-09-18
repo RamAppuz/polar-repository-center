@@ -4,7 +4,7 @@ import random
 import time
 import pydeck as pdk
 
-# 1. Page Configuration for a high-tech dashboard structure
+# 1. Production UI Theme & Layout Configuration
 st.set_page_config(
     page_title="NCPOR Polar Command Center", 
     page_icon="❄️",
@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom Military-Grade CSS styling blocks
+# Custom High-Tech Styling Enhancements
 st.markdown("""
     <style>
     .stApp { background-color: #0b0f19; color: #f8fafc; }
@@ -21,7 +21,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 2. Database Layer Persistence (Session State Management)
+# 2. Permanent Mock Database Setup (Simulated Storage State)
 if 'comnap_cargo_db' not in st.session_state:
     st.session_state.comnap_cargo_db = pd.DataFrame([
         {"Manifest ID": "MFT-2026-001", "Item": "Aviation Fuel (Jet A-1)", "Category": "Fuel", "Quantity": 1500, "Unit": "Liters", "Min Threshold": 2000, "Status": "CRITICAL"},
@@ -34,7 +34,7 @@ if 'comnap_cargo_db' not in st.session_state:
 if 'emergency_broadcast_active' not in st.session_state:
     st.session_state.emergency_broadcast_active = False
 
-# 3. Structural Header Area
+# --- APP HEADER ---
 st.title("❄️ Integrated Polar Expedition Logistics & Asset Management")
 st.caption("🌐 Ministry of Earth Sciences (MoES) | National Centre for Polar and Ocean Research (NCPOR) | Live System")
 st.write("---")
@@ -43,7 +43,7 @@ st.write("---")
 if st.session_state.emergency_broadcast_active:
     st.error("🚨 GLOBAL RED ALERT PROTOCOL IS ACTIVE. SATCOM COMMUNICATIONS APPLIED OVER ALL SATELLITE CHANNELS.")
 
-# 4. Central Dashboard Navigation Layout
+# 3. Sidebar Navigation Control Board
 menu = st.sidebar.radio(
     "🛰️ CONTROL ENGINE MODULES:",
     ["📊 Operations Overview", "🚢 COMNAP Cargo Registry", "🫁 Live Personnel Biometrics", "🌤️ Climate Telemetry Grid", "🚨 Emergency Control System"]
@@ -52,7 +52,7 @@ menu = st.sidebar.radio(
 st.sidebar.write("---")
 st.sidebar.status("📡 Telemetry Syncing: ACTIVE", state="running")
 
-# --- MODULE 1: OPERATIONS OVERVIEW (UPGRADED HIGH-TECH MAP) ---
+# --- MODULE 1: OPERATIONS OVERVIEW ---
 if menu == "📊 Operations Overview":
     st.subheader("📍 Real-Time Spatial Positioning & Terrain Telemetry")
     
@@ -69,9 +69,9 @@ if menu == "📊 Operations Overview":
         {"name": "Field Camp Alpha", "latitude": -72.0000, "longitude": 45.0000}
     ])
     
-    st.write("#### 📡 3D Satellite Imagery Operations Grid")
+    st.write("#### 📡 3D Coordinate Cartography Grid")
     
-    # Professional Mapbox Configuration for a Dark Satellite/Terrain view
+    # Centering view near Antarctica location points
     view_state = pdk.ViewState(
         latitude=-70.0,
         longitude=45.0,
@@ -83,14 +83,14 @@ if menu == "📊 Operations Overview":
         "ScatterplotLayer",
         map_data,
         get_position=["longitude", "latitude"],
-        get_color="[239, 68, 68, 200]",  # Red warning dots for stations
-        get_radius=80000,
+        get_color=[239, 68, 68, 200],  # Bright red marker coordinates
+        get_radius=100000,
         pickable=True
     )
     
-    # Using the official Mapbox Dark/Satellite Hybrid professional style map
+    # FIXED: Replaced custom Mapbox URL with built-in dark cloud environment layout (No tokens needed!)
     st.pydeck_chart(pdk.Deck(
-        map_style="mapbox://styles/mapbox/satellite-streets-v12", 
+        map_style="dark", 
         initial_view_state=view_state,
         layers=[layer],
         tooltip={"text": "{name}"}
@@ -153,7 +153,7 @@ elif menu == "🫁 Live Personnel Biometrics":
         live_temp = round(p["Temp"] + random.uniform(-0.2, 0.2), 1)
         
         with st.container(border=True):
-            h_col, d_col = st.columns()
+            h_col, d_col = st.columns(2)  # FIXED: Defined explicit integer layout value
             with h_col:
                 st.markdown(f"### 👤 {p['Name']}")
                 st.write(f"*{p['Role']}*")
@@ -176,7 +176,7 @@ elif menu == "🫁 Live Personnel Biometrics":
                 st.write(f"**Life-Support Oxygen Cylinder Reserves Level:** {p['O2']}%")
                 if p["O2"] < 20:
                     st.progress(p["O2"] / 100)
-                    st.markdown("<span style='color:#ef4444; font-weight:bold;'>🚨 CRITICAL DEPLETION TRACED ON SUITE TANK RESERVES</span>", unsafe_allow_html=True)
+                    st.markdown("<span style='color:#ef4444; font-weight:bold;'>🚨 CRITICAL DEPLETION</span>", unsafe_allow_html=True)
                 else:
                     st.progress(p["O2"] / 100)
 
@@ -187,49 +187,32 @@ elif menu == "🌤️ Climate Telemetry Grid":
     col1.metric("Bharati Station Node", "-22°C", "Wind: 14 knots")
     col2.metric("Maitri Station Node", "-29°C", "Wind: 39 knots")
     col3.metric("Field Camp Outpost Alpha", "-44°C", "Wind: 64 knots 🚨", delta_color="inverse")
-    st.error("🤖 **AUTOMATED MITIGATION RULE EXECUTION:** Safe navigation paths blocked out automatically at Field Camp Outpost due to wind shear limits.")
-# --- MODULE 3: LIVE PERSONNEL BIOMETRICS ---
-elif menu == "🫁 Live Personnel Biometrics":
-    st.subheader("👤 High-Frequency Radio Telemetry Biometric Stream")
-    st.caption("🔄 Telemetry Loop Active: Data elements updating dynamically every 1.0 seconds.")
+    st.error("🤖 **AUTOMATED MITIGATION RULE EXECUTION:** Operations locked down at Outpost Alpha due to blizzard conditions.")
+
+# --- MODULE 5: EMERGENCY CONTROL SYSTEM ---
+elif menu == "🚨 Emergency Control System":
+    st.subheader("⚠️ Emergency Response System (ERS) Management Portal")
+    st.warning("CRITICAL ACTIONS AHEAD: Triggering these buttons overrides standard tracking loops.")
     
-    team = [
-        {"Name": "Dr. Aarav Sharma", "Role": "Lead Meteorologist", "Loc": "Bharati Station", "HR": 72, "SYS": 120, "DIA": 80, "SpO2": 98, "Temp": 36.6, "O2": 82},
-        {"Name": "Sarah Jenkins", "Role": "Logistics Chief", "Loc": "Maitri Station", "HR": 76, "SYS": 122, "DIA": 82, "SpO2": 99, "Temp": 36.8, "O2": 91},
-        {"Name": "Cmdr. Rajesh Kumar", "Role": "Expedition Leader", "Loc": "Ice Outpost Alpha", "HR": 106, "SYS": 141, "DIA": 92, "SpO2": 91, "Temp": 34.4, "O2": 14}
-    ]
+    col_trigger, col_reset = st.columns(2)
     
-    for p in team:
-        live_hr = p["HR"] + random.randint(-3, 3)
-        live_sys = p["SYS"] + random.randint(-4, 4)
-        live_dia = p["DIA"] + random.randint(-2, 2)
-        live_spo2 = min(100, p["SpO2"] + random.randint(-1, 1))
-        live_temp = round(p["Temp"] + random.uniform(-0.2, 0.2), 1)
-        
-        with st.container(border=True):
-            h_col, d_col = st.columns(2)  # <-- FIXED: Explicitly asking for 2 main columns now
-            with h_col:
-                st.markdown(f"### 👤 {p['Name']}")
-                st.write(f"*{p['Role']}*")
-                st.markdown(f"📍 **Node:** {p['Loc']}")
-            with d_col:
-                c1, c2, c3, c4 = st.columns(4)
-                c1.metric("❤️ Heart Rate", f"{live_hr} BPM")
-                c2.metric("🩺 Blood Pressure", f"{live_sys}/{live_dia} mmHg")
-                
-                if live_spo2 < 93:
-                    c3.metric("🚨 Oxygen (SpO2)", f"{live_spo2}%", "LOW HYPOXIA", delta_color="inverse")
-                else:
-                    c3.metric("🟢 Oxygen (SpO2)", f"{live_spo2}%")
-                    
-                if live_temp < 35.0:
-                    c4.metric("🥶 Core Body Temp", f"{live_temp}°C", "HYPOTHERMIA", delta_color="inverse")
-                else:
-                    c4.metric("🌡️ Core Body Temp", f"{live_temp}°C")
-                
-                st.write(f"**Life-Support Oxygen Cylinder Reserves Level:** {p['O2']}%")
-                if p["O2"] < 20:
-                    st.progress(p["O2"] / 100)
-                    st.markdown("<span style='color:#ef4444; font-weight:bold;'>🚨 CRITICAL DEPLETION TRACED ON SUITE TANK RESERVES</span>", unsafe_allow_html=True)
-                else:
-                    st.progress(p["O2"] / 100)
+    with col_trigger:
+        if st.button("🚨 BROADCAST EMERGENCY RED ALERT STATE", type="primary", use_container_width=True):
+            st.session_state.emergency_broadcast_active = True
+            st.rerun()
+            
+    with col_reset:
+        if st.button("✅ DE-ESCALATE SYSTEM TO STANDARD MONITORING", use_container_width=True):
+            st.session_state.emergency_broadcast_active = False
+            st.success("System returned to secure baseline operations status.")
+            st.rerun()
+
+    if st.session_state.emergency_broadcast_active:
+        st.error("🚨 CURRENT SYSTEM STATE: RED CRITICAL OVERRIDE. Signal outposts pinged continuously.")
+    else:
+        st.success("✅ CURRENT SYSTEM STATE: Baseline standard operations.")
+
+# --- 5. AUTOMATED DYNAMIC TIMING REFRESH CONTROLLER LOOP ---
+if menu == "🫁 Live Personnel Biometrics":
+    time.sleep(1.0)
+    st.rerun()
