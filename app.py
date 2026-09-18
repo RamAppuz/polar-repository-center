@@ -195,9 +195,6 @@ elif menu == "🚨 Emergency Control System":
     st.warning("CRITICAL ACTIONS AHEAD: Triggering these buttons overrides standard tracking loops to deploy emergency SAR groups.")
     
     col_trigger, col_reset = st.columns(2)
-    with col_trigger:
-        if st.button("🚨 BROADCAST EMERGENCY RED ALERT STATE", type="primary", use_container_width=True):
-    col_trigger, col_reset = st.columns(2)
     
     with col_trigger:
         if st.button("🚨 BROADCAST EMERGENCY RED ALERT STATE", type="primary", use_container_width=True):
@@ -214,6 +211,7 @@ elif menu == "🚨 Emergency Control System":
         st.error("🚨 CURRENT SYSTEM STATE: RED CRITICAL OVERRIDE. Signal outposts pinged continuously.")
     else:
         st.success("✅ CURRENT SYSTEM STATE: Baseline standard operations. No distress tracks detected.")
+
 # --- 5. AUTOMATED DYNAMIC TIMING REFRESH CONTROLLER LOOP ---
 if menu == "🫁 Live Personnel Biometrics":
     time.sleep(1.0)
