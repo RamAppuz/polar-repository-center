@@ -63,7 +63,7 @@ if menu == "📊 Operations Overview":
     m2.metric(label="Critical Supply Breaches", value=f"{crit_qty} Flagged", delta="Action Required", delta_color="inverse")
     m3.metric(label="System Satellite Feed", value="Secure Encryption", delta="Connected")
     
-    st.write("#### 📡 Real Photographic Satellite Grid (Esri World Imagery)")
+    st.write("#### 📡 Real Photographic Satellite Grid (Google Satellite Layout)")
     
     # Station Coordinates
     stations = [
@@ -72,12 +72,12 @@ if menu == "📊 Operations Overview":
         {"name": "Field Camp Alpha", "lat": -72.0000, "lon": 45.0000}
     ]
     
-    # Generate Folium map using public photographic satellite tileset
+    # FIXED: Replaced ArcGIS with Google Satellite tiles layer to remove the blank white texture sheets
     m = folium.Map(
         location=[-70.5, 45.0], 
         zoom_start=3, 
-        tiles='https://arcgisonline.com{z}/{y}/{x}',
-        attr='Esri World Imagery'
+        tiles='https://google.com{x}&y={y}&z={z}',
+        attr='Google Satellite'
     )
     
     # Add red map pin tracking tags for our stations
