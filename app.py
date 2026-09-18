@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 import random
 import time
-import pydeck as pdk
+import folium
+from streamlit_folium import st_folium
 
 # 1. Production UI Theme & Layout Configuration
 st.set_page_config(
@@ -52,7 +53,7 @@ menu = st.sidebar.radio(
 st.sidebar.write("---")
 st.sidebar.status("📡 Telemetry Syncing: ACTIVE", state="running")
 
-# --- MODULE 1: OPERATIONS OVERVIEW ---
+# --- MODULE 1: OPERATIONS OVERVIEW (TRUE PHOTO SATELLITE INTERFACE) ---
 if menu == "📊 Operations Overview":
     st.subheader("📍 Real-Time Spatial Positioning & Terrain Telemetry")
     
@@ -62,16 +63,34 @@ if menu == "📊 Operations Overview":
     m2.metric(label="Critical Supply Breaches", value=f"{crit_qty} Flagged", delta="Action Required", delta_color="inverse")
     m3.metric(label="System Satellite Feed", value="Secure Encryption", delta="Connected")
     
-    # Coordinates for key research outposts
-    map_data = pd.DataFrame({
-        "latitude": [-69.4083, -70.7667, -72.0000],
-        "longitude": [76.1944, 11.7333, 45.0000]
-    })
+    st.write("#### 📡 Real Photographic Satellite Grid (Esri World Imagery)")
     
-    st.write("#### 📡 Live Satellite Operations Grid Layer")
+    # Station Coordinates
+    stations = [
+        {"name": "Maitri Station (India)", "lat": -70.7667, "lon": 11.7333},
+        {"name": "Bharati Station (India)", "lat": -69.4083, "lon": 76.1944},
+        {"name": "Field Camp Alpha", "lat": -72.0000, "lon": 45.0000}
+    ]
     
-    # Using clean, high-performance map points that overlay beautifully on satellite configurations
-    st.map(map_data, zoom=2, color="#ef4444", size=50)
+    # Generate Folium map using premium public photographic satellite tileset
+    m = folium.Map(
+        location=[-70.5, 45.0], 
+        zoom_start=3, 
+        tiles='https://arcgisonline.com{z}/{y}/{x}',
+        attr='Esri World Imagery'
+    )
+    
+    # Add red map pin tracking tags for our stations
+    for station in stations:
+        folium.Marker(
+            location=[station["lat"], station["lon"]],
+            popup=station["name"],
+            tooltip=station["name"],
+            icon=folium.Icon(color='red', icon='info-sign')
+        ).add_to(m)
+        
+    # Render the interactive visual map canvas inside the app
+    st_folium(m, width="100%", height=500, returned_objects=[])
 
 # --- MODULE 2: COMNAP CARGO REGISTRY ---
 elif menu == "🚢 COMNAP Cargo Registry":
@@ -130,7 +149,7 @@ elif menu == "🫁 Live Personnel Biometrics":
         live_temp = round(p["Temp"] + random.uniform(-0.2, 0.2), 1)
         
         with st.container(border=True):
-            h_col, d_col = st.columns(2)  # FIXED: Defined explicit integer layout value
+            h_col, d_col = st.columns(2)
             with h_col:
                 st.markdown(f"### 👤 {p['Name']}")
                 st.write(f"*{p['Role']}*")
