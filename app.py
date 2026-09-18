@@ -2,8 +2,7 @@ import streamlit as st
 import pandas as pd
 import random
 import time
-import folium
-from streamlit_folium import st_folium
+import pydeck as pdk
 
 # 1. Production UI Theme & Layout Configuration
 st.set_page_config(
@@ -53,7 +52,7 @@ menu = st.sidebar.radio(
 st.sidebar.write("---")
 st.sidebar.status("📡 Telemetry Syncing: ACTIVE", state="running")
 
-# --- MODULE 1: OPERATIONS OVERVIEW ---
+# --- MODULE 1: OPERATIONS OVERVIEW (NEON DARK GRID PATTERN) ---
 if menu == "📊 Operations Overview":
     st.subheader("📍 Real-Time Spatial Positioning & Terrain Telemetry")
     
@@ -63,38 +62,40 @@ if menu == "📊 Operations Overview":
     m2.metric(label="Critical Supply Breaches", value=f"{crit_qty} Flagged", delta="Action Required", delta_color="inverse")
     m3.metric(label="System Satellite Feed", value="Secure Encryption", delta="Connected")
     
-    st.write("#### 📡 Real Photographic Satellite Grid (Google Satellite Layout)")
+    st.write("#### 📡 3D Coordinate Cartography Grid (Neon Outpost Vector Layout)")
     
-    # Station Coordinates
-    stations = [
-        {"name": "Maitri Station (India)", "lat": -70.7667, "lon": 11.7333},
-        {"name": "Bharati Station (India)", "lat": -69.4083, "lon": 76.1944},
-        {"name": "Field Camp Alpha", "lat": -72.0000, "lon": 45.0000}
-    ]
+    # Precise Antarctic Coordinates for India's Stations
+    map_data = pd.DataFrame([
+        {"name": "Bharati Station (India)", "latitude": -69.4083, "longitude": 76.1944},
+        {"name": "Maitri Station (India)", "latitude": -70.7667, "longitude": 11.7333},
+        {"name": "Field Camp Alpha", "latitude": -72.0000, "longitude": 45.0000}
+    ])
     
-    # FIXED: Replaced ArcGIS with Google Satellite tiles layer to remove the blank white texture sheets
-    m = folium.Map(
-        location=[-70.5, 45.0], 
-        zoom_start=3, 
-        tiles='https://google.com{x}&y={y}&z={z}',
-        attr='Google Satellite'
+    # Custom camera point angled down at the Antarctic coast layout grid
+    view_state = pdk.ViewState(
+        latitude=-68.0,
+        longitude=45.0,
+        zoom=2.2,
+        pitch=35
     )
     
-    # Add red map pin tracking tags for our stations
-    for station in stations:
-        folium.Marker(
-            location=[station["lat"], station["lon"]],
-            popup=station["name"],
-            tooltip=station["name"],
-            icon=folium.Icon(color='red', icon='info-sign')
-        ).add_to(m)
-        
-    # CSS wrapper hack to force the container background to match the dark theme
-    st.markdown("<style>iframe { background-color: #0b0f19 !important; border: none !important; }</style>", unsafe_allow_html=True)
+    # Pulsing neon cyan markers representing polar stations
+    layer = pdk.Layer(
+        "ScatterplotLayer",
+        map_data,
+        get_position=["longitude", "latitude"],
+        get_color=[56, 189, 248, 200],  # Neon Blue/Cyan nodes
+        get_radius=120000,
+        pickable=True
+    )
     
-    # Render the interactive map canvas
-    st_folium(m, width="100%", height=500, returned_objects=[])
-
+    # Native Pydeck Canvas Engine using the clean vector map theme setup
+    st.pydeck_chart(pdk.Deck(
+        map_style="light",  # Standard baseline theme contrast 
+        initial_view_state=view_state,
+        layers=[layer],
+        tooltip={"text": "{name}"}
+    ))
 
 # --- MODULE 2: COMNAP CARGO REGISTRY ---
 elif menu == "🚢 COMNAP Cargo Registry":
