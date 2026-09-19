@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import random
 import time
-import streamlit.components.v1 as components
+import pydeck as pdk  # <-- ENSURE THIS LINE IS EXACTLY HERE
 
 # 1. Enterprise Dashboard Layout Configuration
 st.set_page_config(
@@ -11,6 +11,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
 
 # 🎨 Clean Enterprise Dark CSS Styling Engine
 st.markdown("""
