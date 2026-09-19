@@ -78,7 +78,7 @@ with st.sidebar:
     st.write("---")
     st.status("Telemetry Link: ACTIVE", state="complete")
 
-# --- MODULE 1: OPERATIONS OVERVIEW (TACTICAL RADAR & VITAL MONITOR INTERFACE) ---
+# --- MODULE 1: OPERATIONS OVERVIEW ---
 if menu == "📊 Operations Overview":
     st.markdown("### 🌐 Core Telemetry Metrics")
     
@@ -91,147 +91,36 @@ if menu == "📊 Operations Overview":
     with col3:
         st.metric(label="Downlink Configuration", value="Secure SATCOM", delta="Online")
     
-    # ⚡ PURE HTML5 CANVAS ENGINE IMPLEMENTATION (Draws Radar Sweep + Live Sine Wave Medical Charts)
-    radar_html = """
-    <div style="background-color: #0b0f17; display: flex; flex-direction: row; gap: 20px; padding: 20px; border-radius: 8px; border: 1px solid #1f2937; font-family: sans-serif;">
-        <!-- Left Side: Tactical Radar Screen -->
-        <div style="flex: 1; text-align: center;">
-            <div style="color: #38bdf8; font-size: 14px; font-weight: bold; text-align: left; margin-bottom: 10px; letter-spacing: 1px;">POLAR MAP SYS</div>
-            <canvas id="radarCanvas" width="340" height="340" style="background: #0b0f17; border-radius: 50%;"></canvas>
-        </div>
-        
-        <!-- Right Side: Vitals Signal Matrix -->
-        <div style="flex: 1.2; display: flex; flex-direction: column; justify-content: space-between;">
-            <div style="color: #38bdf8; font-size: 14px; font-weight: bold; margin-bottom: 10px; letter-spacing: 1px;">VITAL STREAM MATRIX (60HZ)</div>
-            
-            <div style="margin-bottom: 10px;">
-                <div style="color: #10b981; font-size: 11px; font-weight: bold; margin-bottom: 2px;">ECG</div>
-                <canvas id="ecgCanvas" width="400" height="60" style="background: #0b0f17; border-bottom: 1px solid #1f2937;"></canvas>
-            </div>
-            <div style="margin-bottom: 10px;">
-                <div style="color: #06b6d4; font-size: 11px; font-weight: bold; margin-bottom: 2px;">SPO2</div>
-                <canvas id="spo2Canvas" width="400" height="60" style="background: #0b0f17; border-bottom: 1px solid #1f2937;"></canvas>
-            </div>
-            <div>
-                <div style="color: #f59e0b; font-size: 11px; font-weight: bold; margin-bottom: 2px;">RESP</div>
-                <canvas id="respCanvas" width="400" height="60" style="background: #0b0f17;"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // --- 1. Radar Rendering System ---
-        const radarCanvas = document.getElementById('radarCanvas');
-        const rCtx = radarCanvas.getContext('2d');
-        let angle = 0;
-        
-        const targets = [
-            { name: "S-101", x: 200, y: 140, color: "#10b981" },
-            { name: "S-102", x: 250, y: 90, color: "#10b981" },
-            { name: "S-105", x: 100, y: 150, color: "#ef4444" },
-            { name: "G-201", x: 95, y: 240, color: "#f59e0b" },
-            { name: "N-304", x: 270, y: 200, color: "#10b981" }
-        ];
-
-        function drawRadar() {
-            const cx = radarCanvas.width / 2;
-            const cy = radarCanvas.height / 2;
-            const r = cx - 10;
-            
-            rCtx.clearRect(0, 0, radarCanvas.width, radarCanvas.height);
-            
-            // Outer concentric scope rings
-            rCtx.strokeStyle = 'rgba(56, 189, 248, 0.15)';
-            rCtx.lineWidth = 1;
-            for(let i = 1; i <= 4; i++) {
-                rCtx.beginPath();
-                rCtx.arc(cx, cy, (r/4)*i, 0, Math.PI * 2);
-                rCtx.stroke();
-            }
-            
-            // Crosshairs axes layout lines
-            rCtx.beginPath();
-            rCtx.moveTo(cx, 0); rCtx.lineTo(cx, radarCanvas.height);
-            rCtx.moveTo(0, cy); rCtx.lineTo(radarCanvas.width, cy);
-            rCtx.stroke();
-            
-            // Sweeping radar arm calculation line
-            rCtx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
-            rCtx.lineWidth = 2;
-            rCtx.beginPath();
-            rCtx.moveTo(cx, cy);
-            rCtx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
-            rCtx.stroke();
-            
-            // Render Target Blips
-            targets.forEach(t => {
-                rCtx.fillStyle = t.color;
-                rCtx.beginPath();
-                rCtx.arc(t.x, t.y, 6, 0, Math.PI * 2);
-                rCtx.fill();
-                
-                rCtx.fillStyle = "#94a3b8";
-                rCtx.font = "10px sans-serif";
-                rCtx.fillText(t.name, t.x + 10, t.y + 4);
-            });
-            
-            angle += 0.015;
-            requestAnimationFrame(drawRadar);
-        }
-
-        // --- 2. Real-Time Waveform Generator Charts ---
-        function setupWave(canvasId, drawFn) {
-            const canvas = document.getElementById(canvasId);
-            const ctx = canvas.getContext('2d');
-            let offset = 0;
-            
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.lineWidth = 1.5;
-                ctx.beginPath();
-                drawFn(ctx, canvas.width, canvas.height, offset);
-                ctx.stroke();
-                offset += 2;
-                requestAnimationFrame(animate);
-            }
-            animate();
-        }
-
-        setupWave('ecgCanvas', (ctx, w, h, offset) => {
-            ctx.strokeStyle = '#10b981';
-            for (let x = 0; x < w; x++) {
-                let y = h / 2;
-                let phase = (x + offset) % 120;
-                if (phase > 40 && phase < 45) y -= 15;
-                else if (phase >= 45 && phase < 52) y += 20;
-                else if (phase >= 52 && phase < 58) y -= 8;
-                
-                if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-            }
-        });
-
-        setupWave('spo2Canvas', (ctx, w, h, offset) => {
-            ctx.strokeStyle = '#06b6d4';
-            for (let x = 0; x < w; x++) {
-                let y = h/2 + Math.sin((x + offset) * 0.04) * 8 + Math.sin((x + offset) * 0.01) * 3;
-                if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-            }
-        });
-
-        setupWave('respCanvas', (ctx, w, h, offset) => {
-            ctx.strokeStyle = '#f59e0b';
-            for (let x = 0; x < w; x++) {
-                let y = h/2 + Math.sin((x + offset) * 0.015) * 12;
-                if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-            }
-        });
-
-        drawRadar();
-    </script>
-    """
+    st.markdown("#### 🗺️ Deployment Cartography Grid (Antarctic Operations Node Grid)")
     
-    # Securely mount the real-time layout canvas onto the central container box
-    components.html(radar_html, height=400)
+    # Precise Antarctic Coordinates for India's Scientific Stations
+    map_data = pd.DataFrame([
+        {"name": "Bharati Station (India)", "latitude": -69.4083, "longitude": 76.1944},
+        {"name": "Maitri Station (India)", "latitude": -70.7667, "longitude": 11.7333},
+        {"name": "Field Camp Alpha", "latitude": -72.0000, "longitude": 45.0000}
+    ])
+    
+    # Custom camera viewpoint angled down at the tracking coordinates
+    view_state = pdk.ViewState(latitude=-68.0, longitude=45.0, zoom=2.0, pitch=30)
+    
+    # Clean structured red tracking node layer markers
+    layer = pdk.Layer(
+        "ScatterplotLayer",
+        map_data,
+        get_position=["longitude", "latitude"],
+        get_color=[239, 68, 68, 200],  
+        get_radius=150000,
+        pickable=True
+    )
+    
+    # Native Pydeck free dark map canvas layer
+    st.pydeck_chart(pdk.Deck(
+        map_style="dark", 
+        initial_view_state=view_state,
+        layers=[layer],
+        tooltip={"text": "{name}"}
+    ))
+
 
 # --- MODULE 2: COMNAP CARGO REGISTRY ---
 elif menu == "🚢 COMNAP Cargo Registry":
